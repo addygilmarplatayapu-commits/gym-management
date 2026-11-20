@@ -1,11 +1,16 @@
-import TopGreenHeader from "@/components/molecules/TopGreenHeader";
-import AddMemberForm from "@/components/organisms/AddMemberForm";
+import { getPlans } from "../../../services/api";
+import TopGreenHeader from "../../../components/molecules/TopGreenHeader";
+import AddMemberForm from "../../../components/organisms/AddMemberForm";
 
-export default function AddMemberPage() {
+export const dynamic = "force-dynamic";
+
+export default async function AddMemberPage() {
+  const plans = await getPlans();
+
   return (
     <>
       <TopGreenHeader mode="add" />
-      <AddMemberForm />
+      <AddMemberForm plans={plans} />
     </>
   );
 }

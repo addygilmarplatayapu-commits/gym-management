@@ -7,12 +7,14 @@ export default function MemberCard({ member }) {
         <Trash2 className="w-3.5 h-3.5" />
       </button>
 
-      <div className="w-14 h-14 rounded-full overflow-hidden mx-auto border border-gray-600 mb-2">
-        <img
-          src={member.avatar || "https://i.pravatar.cc/150?img=12"}
-          alt={member.name}
-          className="w-full h-full object-cover"
-        />
+      <div className="w-14 h-14 rounded-full overflow-hidden mx-auto border border-gray-600 mb-2 bg-neutral-800">
+        {member.avatar && (
+          <img
+            src={member.avatar}
+            alt={member.name}
+            className="w-full h-full object-cover"
+          />
+        )}
       </div>
 
       <div className="text-[11px] space-y-0.5 leading-tight">
@@ -23,15 +25,15 @@ export default function MemberCard({ member }) {
         <p className="flex items-center gap-1">
           <IdCard className="w-3 h-3 text-white inline" />
           <span className="text-[#84CC16]">M ID : </span>
-          <span className="text-white">{member.memberNo || member.id}</span>
+          <span className="text-white">{member.memberNo}</span>
         </p>
         <p className="truncate">
           <span className="text-[#84CC16]">Plan Expiry : </span>
-          <span className="text-white">{member.planExpiry || "01 Sep 2023"}</span>
+          <span className="text-white">{member.expiryDate || "-"}</span>
         </p>
         <p>
           <span className="text-[#84CC16]">Due Amount : </span>
-          <span className="text-white">{member.dueAmount || "0"}</span>
+          <span className="text-white">{member.dueAmount ?? 0}</span>
         </p>
       </div>
 

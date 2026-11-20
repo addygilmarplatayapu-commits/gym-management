@@ -6,28 +6,33 @@ import GreenLabel from "../atoms/GreenLabel";
 import DottedInput from "../atoms/DottedInput";
 import { createMember } from "../../services/api";
 
-export default function AddMemberForm() {
+export default function AddMemberForm({ plans = [] }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
+  const defaultPlan = plans[0]
+    ? `${plans[0].name} [ ${plans[0].pricePerYear}$ ]`
+    : "";
+
   const [form, setForm] = useState({
     name: "",
+    avatar: "",
     mobile: "",
     gender: "Male",
-    memberNo: "12",
+    memberNo: "",
     height: "",
     weight: "",
     chest: "",
     waist: "",
     dob: "",
     address: "",
-    training: "Trainer",
-    plan: "General [ 800 ]",
+    trainingType: "Trainer",
+    plan: defaultPlan,
     batchTime: "6.00am to 7.00am",
-    joiningFrom: "1/9/23",
-    joiningTo: "1/10/23",
+    joiningDate: "",
+    expiryDate: "",
     paidAmount: "",
-    dueAmount: "0",
+    dueAmount: "",
     paymentMethod: "Cash",
   });
 
@@ -43,15 +48,26 @@ export default function AddMemberForm() {
     try {
       const randomImg = Math.floor(Math.random() * 50) + 1;
       await createMember({
+        memberNo: Number(form.memberNo),
         name: form.name,
+        avatar: form.avatar.trim() || `https://i.pravatar.cc/150?img=${randomImg}`,
         mobile: form.mobile,
         gender: form.gender,
-        memberNo: Number(form.memberNo),
-        planExpiry: form.joiningTo || "01 Sep 2023",
-        dueAmount: Number(form.dueAmount) || "0",
+        height: Number(form.height) || 0,
+        weight: Number(form.weight) || 0,
+        chest: Number(form.chest) || 0,
+        waist: Number(form.waist) || 0,
+        dob: form.dob,
+        address: form.address,
+        trainingType: form.trainingType,
         plan: form.plan,
         batchTime: form.batchTime,
-        avatar: 'https://i.pravatar.cc/150?img=${randomImg}',
+        joiningDate: form.joiningDate,
+        expiryDate: form.expiryDate,
+        paidAmount: Number(form.paidAmount) || 0,
+        dueAmount: Number(form.dueAmount) || 0,
+        paymentMethod: form.paymentMethod,
+        blocked: false,
       });
 
       router.push("/members");
@@ -70,11 +86,16 @@ export default function AddMemberForm() {
         <DottedInput name="name" value={form.name} onChange={handleChange} required />
       </div>
 
-      <div className="flex items-center gap-4">
-        <GreenLabel text="Upload Photo -:" />
-        <div className="border border-gray-500 rounded-full px-5 py-1 flex items-center gap-2 text-xs text-[#84CC16]">
-          <Upload className="w-3.5 h-3.5" />
-          <span>Upload</span>
+      <div className="flex items-center gap-2">
+        <GreenLabel text="Photo URL -:" />
+        <div className="flex items-center gap-2 flex-1">
+          <Upload className="w-4 h-4 text-[#84CC16]" />
+          <DottedInput
+            name="avatar"
+            value={form.avatar}
+            onChange={handleChange}
+            placeholder="https://... (opcional)"
+          />
         </div>
       </div>
 
@@ -114,7 +135,7 @@ export default function AddMemberForm() {
 
       <div className="flex items-center gap-2">
         <GreenLabel text="Member No -:" />
-        <DottedInput name="memberNo" value={form.memberNo} onChange={handleChange} />
+        <DottedInput name="memberNo" type="number" value={form.memberNo} onChange={handleChange} required />
       </div>
 
       <div className="flex items-start gap-2">
@@ -122,26 +143,26 @@ export default function AddMemberForm() {
         <div className="grid grid-cols-2 gap-2 text-[11px] text-[#84CC16] flex-1">
           <div className="flex items-center gap-1">
             <span>Height:</span>
-            <DottedInput name="height" value={form.height} onChange={handleChange} />
+            <DottedInput name="height" type="number" value={form.height} onChange={handleChange} />
           </div>
           <div className="flex items-center gap-1">
             <span>Weight:</span>
-            <DottedInput name="weight" value={form.weight} onChange={handleChange} />
+            <DottedInput name="weight" type="number" value={form.weight} onChange={handleChange} />
           </div>
           <div className="flex items-center gap-1">
             <span>Chest:</span>
-            <DottedInput name="chest" value={form.chest} onChange={handleChange} />
+            <DottedInput name="chest" type="number" value={form.chest} onChange={handleChange} />
           </div>
           <div className="flex items-center gap-1">
             <span>Waist:</span>
-            <DottedInput name="waist" value={form.waist} onChange={handleChange} />
+            <DottedInput name="waist" type="number" value={form.waist} onChange={handleChange} />
           </div>
         </div>
       </div>
 
       <div className="flex items-center gap-2">
         <GreenLabel text="Date of Birth -:" />
-        <DottedInput name="dob" value={form.dob} onChange={handleChange} />
+        <DottedInput name="dob" value={form.dob} onChange={handleChange} placeholder="ej. 15 May 1998" />
       </div>
 
       <div className="flex items-center gap-2">
@@ -154,9 +175,9 @@ export default function AddMemberForm() {
         <label className="flex items-center gap-1.5 text-[#84CC16]">
           <input
             type="radio"
-            name="training"
+            name="trainingType"
             value="Trainer"
-            checked={form.training === "Trainer"}
+            checked={form.trainingType === "Trainer"}
             onChange={handleChange}
             className="accent-[#84CC16]"
           />
@@ -165,9 +186,9 @@ export default function AddMemberForm() {
         <label className="flex items-center gap-1.5 text-[#84CC16]">
           <input
             type="radio"
-            name="training"
+            name="trainingType"
             value="Personal"
-            checked={form.training === "Personal"}
+            checked={form.trainingType === "Personal"}
             onChange={handleChange}
             className="accent-[#84CC16]"
           />
@@ -183,10 +204,11 @@ export default function AddMemberForm() {
           onChange={handleChange}
           className="flex-1 bg-black border-b border-dotted border-gray-400 text-white text-sm py-0.5 focus:outline-none"
         >
-          <option value="General [ 800 ]">General [ 800 ]</option>
-          <option value="Standard [ 40$ ]">Standard [ 40$ ]</option>
-          <option value="Premium [ 50$ ]">Premium [ 50$ ]</option>
-          <option value="Golden [ 60$ ]">Golden [ 60$ ]</option>
+          {plans.map((p) => (
+            <option key={p.id} value={`${p.name} [ ${p.pricePerYear}$ ]`}>
+              {p.name} [ {p.pricePerYear}$ ]
+            </option>
+          ))}
         </select>
       </div>
 
@@ -206,19 +228,19 @@ export default function AddMemberForm() {
 
       <div className="flex items-center gap-2">
         <GreenLabel text="Joining Date -:" />
-        <DottedInput name="joiningFrom" value={form.joiningFrom} onChange={handleChange} />
+        <DottedInput name="joiningDate" value={form.joiningDate} onChange={handleChange} placeholder="1/9/23" />
         <span className="text-[#84CC16] font-bold">To</span>
-        <DottedInput name="joiningTo" value={form.joiningTo} onChange={handleChange} />
+        <DottedInput name="expiryDate" value={form.expiryDate} onChange={handleChange} placeholder="01 Oct 2023" required />
       </div>
 
       <div className="flex items-center gap-2">
         <GreenLabel text="Paid Amount -:" />
-        <DottedInput name="paidAmount" value={form.paidAmount} onChange={handleChange} />
+        <DottedInput name="paidAmount" type="number" value={form.paidAmount} onChange={handleChange} />
       </div>
 
       <div className="flex items-center gap-2">
         <GreenLabel text="Due Amount -:" />
-        <DottedInput name="dueAmount" value={form.dueAmount} onChange={handleChange} />
+        <DottedInput name="dueAmount" type="number" value={form.dueAmount} onChange={handleChange} required />
       </div>
 
       <div className="flex items-center gap-2">
