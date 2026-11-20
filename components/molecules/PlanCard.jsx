@@ -13,15 +13,16 @@ export default function PlanCard({ plan }) {
         {plan.name}
       </h3>
       <p className="text-[#84CC16] text-center text-xs font-semibold mb-3">
-        {plan.price} <span className="text-white font-normal">{plan.period}</span>
+        {plan.pricePerYear}$ <span className="text-white font-normal">Per Year</span>
       </p>
       <ul className="space-y-1.5 text-xs text-gray-200">
-        {plan.features?.map((feat, idx) => (
-          <li key={idx} className="flex items-start gap-2">
-            <span className="text-white text-[10px] mt-0.5">★</span>
-            <span>{feat}</span>
-          </li>
-        ))}
+        {Array.isArray(plan.features) &&
+          plan.features.map((feat, idx) => (
+            <li key={idx} className="flex items-start gap-2">
+              <span className="text-white text-[10px] mt-0.5">★</span>
+              <span>{feat}</span>
+            </li>
+          ))}
       </ul>
     </div>
   );
